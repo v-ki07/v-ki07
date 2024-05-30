@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="cc.css">
+</head>
+<body>
+    <div class="converter">
+        <input type="number" id="usd" placeholder="Enter amount in USD">
+        <button onclick="convert()">Convert to Naira</button>
+        <input type="number" id="naira" placeholder="Amount in Naira" readonly>
+    </div>
+
+<!--javascript section-->    
+    <script>
+        function convert() {
+            var usd = document.getElementById('usd').value;
+            var naira = usd * 411.5; // Manually set exchange rate
+            document.getElementById('naira').value = naira;
+        }
+    </script>
+</body>
+</html>
