@@ -1,4 +1,4 @@
-import { EnhancedMoodEntryForm } from "@/components/EnhancedMoodEntryForm";
+import { StagedMoodEntry } from "@/components/StagedMoodEntry";
 import { EnhancedMoodHistory } from "@/components/EnhancedMoodHistory";
 import { EnhancedMoodAnalytics } from "@/components/EnhancedMoodAnalytics";
 import { InspirationalQuote } from "@/components/InspirationalQuote";
@@ -40,7 +40,7 @@ const Index = () => {
 
         <main className="space-y-12">
           <section>
-            <EnhancedMoodEntryForm onAdd={addEntry} />
+            <StagedMoodEntry onAdd={addEntry} />
           </section>
 
           {!loading && entries.length > 0 && (
