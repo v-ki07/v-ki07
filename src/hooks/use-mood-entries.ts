@@ -26,7 +26,10 @@ export function useMoodEntries() {
       id: e.id,
       mood: e.mood as MoodType,
       note: e.note || "",
-      date: e.created_at
+      date: e.created_at,
+      body_scan: e.body_scan,
+      coping_strategy: e.coping_strategy,
+      gratitude_items: e.gratitude_items || []
     }));
 
     setEntries(formattedEntries);
@@ -45,7 +48,10 @@ export function useMoodEntries() {
       .insert({
         user_id: user.id,
         mood: entry.mood,
-        note: entry.note
+        note: entry.note,
+        body_scan: entry.body_scan,
+        coping_strategy: entry.coping_strategy,
+        gratitude_items: entry.gratitude_items
       })
       .select()
       .single();
@@ -59,7 +65,10 @@ export function useMoodEntries() {
       id: data.id,
       mood: data.mood as MoodType,
       note: data.note || "",
-      date: data.created_at
+      date: data.created_at,
+      body_scan: data.body_scan,
+      coping_strategy: data.coping_strategy,
+      gratitude_items: data.gratitude_items || []
     };
 
     setEntries([newEntry, ...entries]);
