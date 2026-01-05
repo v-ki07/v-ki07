@@ -1,6 +1,6 @@
-import { MoodEntryForm } from "@/components/MoodEntryForm";
-import { MoodHistory } from "@/components/MoodHistory";
-import { MoodAnalytics } from "@/components/MoodAnalytics";
+import { EnhancedMoodEntryForm } from "@/components/EnhancedMoodEntryForm";
+import { EnhancedMoodHistory } from "@/components/EnhancedMoodHistory";
+import { EnhancedMoodAnalytics } from "@/components/EnhancedMoodAnalytics";
 import { InspirationalQuote } from "@/components/InspirationalQuote";
 import { useMoodEntries } from "@/hooks/use-mood-entries";
 import { Sparkles } from "lucide-react";
@@ -40,7 +40,7 @@ const Index = () => {
 
         <main className="space-y-12">
           <section>
-            <MoodEntryForm onAdd={addEntry} />
+            <EnhancedMoodEntryForm onAdd={addEntry} />
           </section>
 
           {!loading && entries.length > 0 && (
@@ -48,8 +48,8 @@ const Index = () => {
               <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 flex items-center gap-2">
                 Insights
               </h2>
-              <MoodAnalytics entries={entries} />
-              <MoodHistory entries={entries} onDelete={deleteEntry} />
+              <EnhancedMoodAnalytics entries={entries} />
+              <EnhancedMoodHistory entries={entries} onDelete={deleteEntry} />
             </section>
           )}
 

@@ -5,6 +5,15 @@ export interface MoodEntry {
   date: string;
   mood: MoodType;
   note?: string;
+  body_scan?: string;
+  coping_strategy?: string;
+  gratitude_items?: string[];
+  small_win?: string;
+  reframe_note?: string;
+  seed_task?: string;
+  achievement_badge?: string;
+  hex_color?: string;
+  visual_metaphor?: string;
 }
 
 export const MOOD_CONFIG: Record<MoodType, { 
