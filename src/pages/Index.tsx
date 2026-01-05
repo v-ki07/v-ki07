@@ -1,6 +1,7 @@
 import { MoodEntryForm } from "@/components/MoodEntryForm";
 import { MoodHistory } from "@/components/MoodHistory";
 import { MoodAnalytics } from "@/components/MoodAnalytics";
+import { InspirationalQuote } from "@/components/InspirationalQuote";
 import { useMoodEntries } from "@/hooks/use-mood-entries";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Sparkles, LogOut, Trash2, AlertTriangle } from "lucide-react";
@@ -113,9 +114,11 @@ const Index = () => {
           <h1 className="text-5xl font-black tracking-tight text-gray-900">
             Mood <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Journal</span>
           </h1>
-          <p className="text-gray-500 text-lg max-w-md mx-auto">
+          <p className="text-gray-500 text-lg max-w-md mx-auto mb-8">
             Take a moment to check in with yourself. Every feeling matters.
           </p>
+          
+          <InspirationalQuote />
         </header>
 
         <main className="space-y-12">
