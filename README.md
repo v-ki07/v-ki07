@@ -1,1 +1,1 @@
-This is my Mood Journal. Which keeps track of you moods ✨
+Mood Journal: Keeps track of your moods
