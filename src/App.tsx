@@ -38,7 +38,7 @@ const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="light" storageKey="mood-journal-theme">
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem storageKey="mood-journal-theme">
       <AuthProvider>
         <TooltipProvider>
           <Toaster />

@@ -39,8 +39,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { showSuccess, showError } from "@/utils/toast";
 
 export function AppSidebar() {
-  const { signOut, user } = useAuth();
-  const { theme, setTheme } = useTheme();
+  const { signOut } = useAuth();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const location = useLocation();
 
   const handleDeleteAccount = async () => {
@@ -69,6 +69,8 @@ export function AppSidebar() {
       showError(error.message || "An error occurred during deletion");
     }
   };
+
+  const isDark = resolvedTheme === "dark";
 
   return (
     <Sidebar>
@@ -110,9 +112,9 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
-                  {theme === "dark" ? <Sun /> : <Moon />}
-                  <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
+                <SidebarMenuButton onClick={() => setTheme(isDark ? "light" : "dark")}>
+                  {isDark ? <Sun /> : <Moon />}
+                  <span>{isDark ? "Light Mode" : "Dark Mode"}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
