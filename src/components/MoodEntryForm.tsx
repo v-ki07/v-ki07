@@ -58,10 +58,10 @@ export const MoodEntryForm = ({ onAdd }: MoodEntryFormProps) => {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto shadow-2xl border-none bg-white/90 backdrop-blur-md overflow-hidden">
-      <CardHeader className="text-center border-b border-gray-50 pb-6">
+    <Card className="w-full max-w-2xl mx-auto shadow-2xl border-none bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md overflow-hidden">
+      <CardHeader className="text-center border-b border-gray-50 dark:border-zinc-800 pb-6">
         <div className="flex justify-center mb-2">
-          <div className="p-2 rounded-full bg-indigo-50 text-indigo-600">
+          <div className="p-2 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
             {step === "mood" && <Heart className="w-5 h-5" />}
             {step === "reflection" && <Brain className="w-5 h-5" />}
             {step === "gratitude" && <Sparkles className="w-5 h-5" />}
@@ -72,7 +72,7 @@ export const MoodEntryForm = ({ onAdd }: MoodEntryFormProps) => {
           {step === "reflection" && "Deep Reflection"}
           {step === "gratitude" && "Small Wins & Gratitude"}
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="dark:text-zinc-400">
           {step === "mood" && "Select your current mood to begin your check-in."}
           {step === "reflection" && "Let's check in with your body and mind."}
           {step === "gratitude" && "Even on tough days, there is light to be found."}
@@ -97,7 +97,7 @@ export const MoodEntryForm = ({ onAdd }: MoodEntryFormProps) => {
                 placeholder="Briefly, what's happening? (Optional)"
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                className="min-h-[100px] border-gray-100 focus:ring-indigo-100 rounded-xl"
+                className="min-h-[100px] border-gray-100 dark:border-zinc-800 dark:bg-zinc-800/50 focus:ring-indigo-100 dark:focus:ring-indigo-900 rounded-xl"
               />
             </motion.div>
           )}
@@ -111,7 +111,7 @@ export const MoodEntryForm = ({ onAdd }: MoodEntryFormProps) => {
               className="space-y-6"
             >
               <div className="space-y-2">
-                <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
+                <label className="text-sm font-bold text-gray-700 dark:text-zinc-300 flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
                   Body Scan: Where do you feel this in your body?
                 </label>
@@ -119,11 +119,11 @@ export const MoodEntryForm = ({ onAdd }: MoodEntryFormProps) => {
                   placeholder="e.g., tightness in chest, warmth in hands..."
                   value={bodyScan}
                   onChange={(e) => setBodyScan(e.target.value)}
-                  className="border-gray-100 focus:ring-indigo-100 rounded-xl py-6"
+                  className="border-gray-100 dark:border-zinc-800 dark:bg-zinc-800/50 focus:ring-indigo-100 dark:focus:ring-indigo-900 rounded-xl py-6"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
+                <label className="text-sm font-bold text-gray-700 dark:text-zinc-300 flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-purple-400" />
                   Coping Strategy: What helps you manage this?
                 </label>
@@ -131,11 +131,11 @@ export const MoodEntryForm = ({ onAdd }: MoodEntryFormProps) => {
                   placeholder="e.g., deep breathing, taking a walk, calling a friend..."
                   value={copingStrategy}
                   onChange={(e) => setCopingStrategy(e.target.value)}
-                  className="border-gray-100 focus:ring-indigo-100 rounded-xl py-6"
+                  className="border-gray-100 dark:border-zinc-800 dark:bg-zinc-800/50 focus:ring-indigo-100 dark:focus:ring-indigo-900 rounded-xl py-6"
                 />
               </div>
               <div className="flex gap-4">
-                <Button variant="ghost" onClick={() => setStep("mood")} className="flex-1 rounded-xl py-6">
+                <Button variant="ghost" onClick={() => setStep("mood")} className="flex-1 rounded-xl py-6 dark:text-zinc-400 dark:hover:bg-zinc-800">
                   <ArrowLeft className="mr-2 w-4 h-4" /> Back
                 </Button>
                 <Button onClick={() => setStep("gratitude")} className="flex-1 bg-indigo-600 hover:bg-indigo-700 rounded-xl py-6">
@@ -154,23 +154,23 @@ export const MoodEntryForm = ({ onAdd }: MoodEntryFormProps) => {
               className="space-y-6"
             >
               <div className="space-y-3">
-                <label className="text-sm font-bold text-gray-700 mb-2 block">
+                <label className="text-sm font-bold text-gray-700 dark:text-zinc-300 mb-2 block">
                   List 3 tiny wins or things you're grateful for:
                 </label>
                 {gratitude.map((item, i) => (
                   <div key={i} className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-300 font-bold">{i + 1}.</span>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-300 dark:text-indigo-600 font-bold">{i + 1}.</span>
                     <Input
                       placeholder={`Something I'm thankful for...`}
                       value={item}
                       onChange={(e) => handleGratitudeChange(i, e.target.value)}
-                      className="pl-10 border-gray-100 focus:ring-indigo-100 rounded-xl py-6"
+                      className="pl-10 border-gray-100 dark:border-zinc-800 dark:bg-zinc-800/50 focus:ring-indigo-100 dark:focus:ring-indigo-900 rounded-xl py-6"
                     />
                   </div>
                 ))}
               </div>
               <div className="flex gap-4">
-                <Button variant="ghost" onClick={() => setStep("reflection")} className="flex-1 rounded-xl py-6">
+                <Button variant="ghost" onClick={() => setStep("reflection")} className="flex-1 rounded-xl py-6 dark:text-zinc-400 dark:hover:bg-zinc-800">
                   <ArrowLeft className="mr-2 w-4 h-4" /> Back
                 </Button>
                 <Button onClick={handleSubmit} className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl py-6 font-bold shadow-lg shadow-indigo-100">

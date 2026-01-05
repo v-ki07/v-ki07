@@ -1,6 +1,5 @@
 import { MoodType, MOOD_CONFIG } from "@/types/mood";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 
 interface MoodSelectorProps {
   selected: MoodType | null;
@@ -17,8 +16,8 @@ export const MoodSelector = ({ selected, onSelect }: MoodSelectorProps) => {
           className={cn(
             "flex flex-col items-center gap-2 p-4 rounded-2xl transition-all duration-200 border-2",
             selected === type 
-              ? `${config.bg} border-current ${config.color} scale-105 shadow-md` 
-              : "border-transparent hover:bg-gray-50 text-gray-400"
+              ? `${config.bg} dark:bg-zinc-800 border-current ${config.color} scale-105 shadow-md` 
+              : "border-transparent hover:bg-gray-50 dark:hover:bg-zinc-800/50 text-gray-400 dark:text-zinc-500"
           )}
         >
           <span className="text-4xl">{config.emoji}</span>
