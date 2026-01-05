@@ -1,4 +1,4 @@
-import { MoodEntry, MOOD_CONFIG } from "@/types/mood";
+import { MoodEntry, MOOD_CONFIG, MoodType } from "@/types/mood";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { format, parseISO } from "date-fns";
@@ -8,12 +8,12 @@ interface MoodAnalyticsProps {
   entries: MoodEntry[];
 }
 
-const moodValues: Record<string, number> = {
-  great: 5,
-  good: 4,
-  neutral: 3,
-  bad: 2,
+const moodValues: Record<MoodType, number> = {
   terrible: 1,
+  bad: 2,
+  neutral: 3,
+  good: 4,
+  great: 5,
 };
 
 export const MoodAnalytics = ({ entries }: MoodAnalyticsProps) => {
@@ -29,11 +29,11 @@ export const MoodAnalytics = ({ entries }: MoodAnalyticsProps) => {
     ? entries.reduce((acc, curr) => {
         acc[curr.mood] = (acc[curr.mood] || 0) + 1;
         return acc;
-      }, {} as Record<string, number>)
+      }, {} as Record<MoodType, number>)
     : null;
 
   const topMood = mostFrequentMood 
-    ? (Object.entries(mostFrequentMood).sort((a, b) => b[1] - a[1])[0][0] as keyof typeof MOOD_CONFIG)
+    ? (Object.entries(mostFrequentMood).sort((a, b) => b[1] - a[1])[0][0] as MoodType)
     : null;
 
   return (

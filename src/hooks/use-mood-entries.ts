@@ -14,7 +14,7 @@ export function useMoodEntries() {
     
     const { data, error } = await supabase
       .from("mood_entries")
-      .select("*")
+      .select("id, created_at, mood, note") // Select only relevant fields
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -25,16 +25,6 @@ export function useMoodEntries() {
     const formattedEntries: MoodEntry[] = data.map(e => ({
       id: e.id,
       date: e.created_at,
-      mood_score: e.mood_score,
-      energy_level: e.energy_level,
-      life_area: e.life_area,
-      body_scan: e.body_scan,
-      small_win: e.small_win,
-      reframe_note: e.reframe_note,
-      seed_task: e.seed_task,
-      visual_metaphor: e.visual_metaphor,
-      hex_color: e.hex_color,
-      achievement_badge: e.achievement_badge,
       mood: e.mood as MoodType,
       note: e.note || ""
     }));
@@ -55,19 +45,9 @@ export function useMoodEntries() {
       .insert({
         user_id: user.id,
         mood: entry.mood,
-        mood_score: entry.mood_score,
-        energy_level: entry.energy_level,
-        life_area: entry.life_area,
-        body_scan: entry.body_scan,
-        small_win: entry.small_win,
-        reframe_note: entry.reframe_note,
-        seed_task: entry.seed_task,
-        achievement_badge: entry.achievement_badge,
-        hex_color: entry.hex_color,
-        visual_metaphor: entry.visual_metaphor,
         note: entry.note
       })
-      .select()
+      .select("id, created_at, mood, note") // Select only relevant fields
       .single();
 
     if (error) {
@@ -78,16 +58,6 @@ export function useMoodEntries() {
     const newEntry: MoodEntry = {
       id: data.id,
       date: data.created_at,
-      mood_score: data.mood_score,
-      energy_level: data.energy_level,
-      life_area: data.life_area,
-      body_scan: data.body_scan,
-      small_win: data.small_win,
-      reframe_note: data.reframe_note,
-      seed_task: data.seed_task,
-      visual_metaphor: data.visual_metaphor,
-      hex_color: data.hex_color,
-      achievement_badge: data.achievement_badge,
       mood: data.mood as MoodType,
       note: data.note || ""
     };
