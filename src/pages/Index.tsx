@@ -3,7 +3,6 @@ import { MoodHistory } from "@/components/MoodHistory";
 import { MoodAnalytics } from "@/components/MoodAnalytics";
 import { InspirationalQuote } from "@/components/InspirationalQuote";
 import { useMoodEntries } from "@/hooks/use-mood-entries";
-import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Sparkles, LogOut, Trash2, AlertTriangle } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
@@ -142,10 +141,6 @@ const Index = () => {
             </div>
           )}
         </main>
-
-        <footer className="mt-20 pt-8 border-t border-gray-100">
-          <MadeWithDyad />
-        </footer>
       </div>
     </div>
   );
