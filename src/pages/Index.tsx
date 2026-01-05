@@ -1,15 +1,49 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { MoodEntryForm } from "@/components/MoodEntryForm";
 import { MoodHistory } from "@/components/MoodHistory";
 import { MoodAnalytics } from "@/components/MoodAnalytics";
 import { useMoodEntries } from "@/hooks/use-mood-entries";
 import { MadeWithDyad } from "@/components/made-with-dyad";
-import { Sparkles, LogOut } from "lucide-react";
+import { Sparkles, LogOut, Loader2 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
-  const { entries, addEntry, deleteEntry, loading } = useMoodEntries();
-  const { signOut, user } = useAuth();
+  const { entries, addEntry, deleteEntry, loading: entriesLoading } = useMoodEntries();
+  const { signOut, user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const [profileLoading, setProfileLoading] = useState(true);
+
+  useEffect(() => {
+    async function checkOnboarding() {
+      if (!user) return;
+      
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("onboarding_completed")
+        .eq("id", user.id)
+        .single();
+
+      if (!error && data && data.onboarding_completed === false) {
+        navigate("/onboarding", { replace: true });
+      }
+      setProfileLoading(false);
+    }
+
+    if (!authLoading && user) {
+      checkOnboarding();
+    }
+  }, [user, authLoading, navigate]);
+
+  if (authLoading || profileLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#fafafa]">
+        <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#fafafa] selection:bg-indigo-100">
@@ -49,7 +83,7 @@ const Index = () => {
             <MoodEntryForm onAdd={addEntry} />
           </section>
 
-          {!loading && entries.length > 0 && (
+          {!entriesLoading && entries.length > 0 && (
             <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
               <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
                 Insights
@@ -59,7 +93,7 @@ const Index = () => {
             </section>
           )}
 
-          {!loading && entries.length === 0 && (
+          {!entriesLoading && entries.length === 0 && (
             <div className="text-center py-12 text-gray-400">
               No entries yet. Start by logging your mood above!
             </div>
