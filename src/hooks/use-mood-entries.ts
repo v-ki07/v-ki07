@@ -1,32 +1,83 @@
 import { useState, useEffect } from "react";
-import { MoodEntry } from "@/types/mood";
+import { MoodEntry, MoodType } from "@/types/mood";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/components/AuthProvider";
+import { showError } from "@/utils/toast";
 
 export function useMoodEntries() {
+  const { user } = useAuth();
   const [entries, setEntries] = useState<MoodEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchEntries = async () => {
+    if (!user) return;
+    
+    const { data, error } = await supabase
+      .from("mood_entries")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      showError("Failed to fetch entries");
+      return;
+    }
+
+    const formattedEntries: MoodEntry[] = data.map(e => ({
+      id: e.id,
+      mood: e.mood as MoodType,
+      note: e.note || "",
+      date: e.created_at
+    }));
+
+    setEntries(formattedEntries);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const saved = localStorage.getItem("mood_entries");
-    if (saved) {
-      setEntries(JSON.parse(saved));
+    fetchEntries();
+  }, [user]);
+
+  const addEntry = async (entry: Omit<MoodEntry, "id" | "date">) => {
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from("mood_entries")
+      .insert({
+        user_id: user.id,
+        mood: entry.mood,
+        note: entry.note
+      })
+      .select()
+      .single();
+
+    if (error) {
+      showError("Failed to save entry");
+      return;
     }
-  }, []);
 
-  const addEntry = (entry: Omit<MoodEntry, "id" | "date">) => {
     const newEntry: MoodEntry = {
-      ...entry,
-      id: crypto.randomUUID(),
-      date: new Date().toISOString(),
+      id: data.id,
+      mood: data.mood as MoodType,
+      note: data.note || "",
+      date: data.created_at
     };
-    const updated = [newEntry, ...entries];
-    setEntries(updated);
-    localStorage.setItem("mood_entries", JSON.stringify(updated));
+
+    setEntries([newEntry, ...entries]);
   };
 
-  const deleteEntry = (id: string) => {
-    const updated = entries.filter((e) => e.id !== id);
-    setEntries(updated);
-    localStorage.setItem("mood_entries", JSON.stringify(updated));
+  const deleteEntry = async (id: string) => {
+    const { error } = await supabase
+      .from("mood_entries")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      showError("Failed to delete entry");
+      return;
+    }
+
+    setEntries(entries.filter((e) => e.id !== id));
   };
 
-  return { entries, addEntry, deleteEntry };
+  return { entries, addEntry, deleteEntry, loading };
 }
