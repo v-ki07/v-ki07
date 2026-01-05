@@ -1,181 +1,171 @@
 import { useState } from "react";
-import { MoodType, MOOD_CONFIG } from "@/types/mood";
-import { MoodSelector } from "./MoodSelector";
+import { MoodEntry, MOOD_CONFIG } from "@/types/mood";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { showSuccess, showError } from "@/utils/toast";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { showSuccess } from "@/utils/toast";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ArrowLeft, Check, Sparkles, Brain, Heart } from "lucide-react";
+import { ArrowRight, ArrowLeft, Check, Sparkles, Brain, Heart, Target } from "lucide-react";
 
 interface MoodEntryFormProps {
-  onAdd: (entry: { 
-    mood: MoodType; 
-    note: string;
-    body_scan: string;
-    coping_strategy: string;
-    gratitude_items: string[];
-  }) => void;
+  onAdd: (entry: Omit<MoodEntry, "id" | "date">) => void;
 }
 
-type Step = "mood" | "reflection" | "gratitude";
+type Step = "vitals" | "physical" | "reframe" | "seed" | "summary";
 
 export const MoodEntryForm = ({ onAdd }: MoodEntryFormProps) => {
-  const [step, setStep] = useState<Step>("mood");
-  const [mood, setMood] = useState<MoodType | null>(null);
-  const [note, setNote] = useState("");
+  const [step, setStep] = useState<Step>("vitals");
+  const [moodScore, setMoodScore] = useState(6);
+  const [energyLevel, setEnergyLevel] = useState("");
+  const [lifeArea, setLifeArea] = useState("");
   const [bodyScan, setBodyScan] = useState("");
-  const [copingStrategy, setCopingStrategy] = useState("");
-  const [gratitude, setGratitude] = useState(["", "", ""]);
+  const [smallWin, setSmallWin] = useState("");
+  const [reframe, setReframe] = useState("");
+  const [seedTask, setSeedTask] = useState("");
 
-  const handleGratitudeChange = (index: number, value: string) => {
-    const newGratitude = [...gratitude];
-    newGratitude[index] = value;
-    setGratitude(newGratitude);
+  const isDown = moodScore <= 4;
+
+  const getVisualMetaphor = (score: number) => {
+    if (score >= 9) return "A field of sunflowers turning toward a golden sun.";
+    if (score >= 7) return "A calm lake reflecting a clear blue sky.";
+    if (score >= 5) return "A quiet path through a misty morning forest.";
+    if (score >= 3) return "A lone candle flickering in a gentle breeze.";
+    return "A rugged cliff standing strong against a crashing ocean.";
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!mood) return;
+  const getBadge = (score: number) => {
+    if (score >= 9) return "Radiant";
+    if (score >= 7) return "Grounded";
+    if (score >= 5) return "Balanced";
+    if (score >= 3) return "Resilient";
+    return "Brave";
+  };
+
+  const handleSubmit = () => {
+    const scoreStr = moodScore.toString();
+    const config = MOOD_CONFIG[scoreStr] || MOOD_CONFIG["6"];
     
-    onAdd({ 
-      mood, 
-      note, 
+    onAdd({
+      mood_score: moodScore,
+      energy_level: energyLevel,
+      life_area: lifeArea,
       body_scan: bodyScan,
-      coping_strategy: copingStrategy,
-      gratitude_items: gratitude.filter(g => g.trim() !== "")
+      small_win: smallWin,
+      reframe_note: isDown ? reframe : undefined,
+      seed_task: seedTask,
+      visual_metaphor: getVisualMetaphor(moodScore),
+      hex_color: config.pixelColor,
+      achievement_badge: getBadge(moodScore),
+      mood: "neutral", // Legacy
+      note: ""
     });
     
-    // Reset form
-    setStep("mood");
-    setMood(null);
-    setNote("");
+    setStep("vitals");
+    setMoodScore(6);
+    setEnergyLevel("");
+    setLifeArea("");
     setBodyScan("");
-    setCopingStrategy("");
-    setGratitude(["", "", ""]);
-    showSuccess("Reflection saved successfully!");
+    setSmallWin("");
+    setReframe("");
+    setSeedTask("");
+    showSuccess("Reflection complete.");
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto shadow-2xl border-none bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md overflow-hidden">
-      <CardHeader className="text-center border-b border-gray-50 dark:border-zinc-800 pb-6">
-        <div className="flex justify-center mb-2">
-          <div className="p-2 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
-            {step === "mood" && <Heart className="w-5 h-5" />}
-            {step === "reflection" && <Brain className="w-5 h-5" />}
-            {step === "gratitude" && <Sparkles className="w-5 h-5" />}
-          </div>
-        </div>
-        <CardTitle className="text-2xl font-black bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-          {step === "mood" && "How are you feeling?"}
-          {step === "reflection" && "Deep Reflection"}
-          {step === "gratitude" && "Small Wins & Gratitude"}
+    <Card className="w-full max-w-2xl mx-auto border-none bg-white dark:bg-zinc-900 shadow-sm overflow-hidden">
+      <CardHeader className="text-center pb-8 border-b dark:border-zinc-800">
+        <CardTitle className="text-xl font-bold tracking-tight dark:text-white">
+          {step === "vitals" && "1. Mood, Energy & Area"}
+          {step === "physical" && "2. Physical & Small Win"}
+          {step === "reframe" && "3. Perspective Shift"}
+          {step === "seed" && "4. Seed for Tomorrow"}
         </CardTitle>
-        <CardDescription className="dark:text-zinc-400">
-          {step === "mood" && "Select your current mood to begin your check-in."}
-          {step === "reflection" && "Let's check in with your body and mind."}
-          {step === "gratitude" && "Even on tough days, there is light to be found."}
-        </CardDescription>
       </CardHeader>
       
-      <CardContent className="pt-8">
+      <CardContent className="pt-10">
         <AnimatePresence mode="wait">
-          {step === "mood" && (
-            <motion.div 
-              key="step-mood"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="space-y-6"
-            >
-              <MoodSelector selected={mood} onSelect={(m) => {
-                setMood(m);
-                setTimeout(() => setStep("reflection"), 400);
-              }} />
-              <Textarea
-                placeholder="Briefly, what's happening? (Optional)"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                className="min-h-[100px] border-gray-100 dark:border-zinc-800 dark:bg-zinc-800/50 focus:ring-indigo-100 dark:focus:ring-indigo-900 rounded-xl"
-              />
+          {step === "vitals" && (
+            <motion.div key="vitals" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
+              <div className="space-y-4">
+                <label className="text-sm font-medium dark:text-zinc-400">Mood Score (1-10): {moodScore}</label>
+                <Slider value={[moodScore]} onValueChange={(v) => setMoodScore(v[0])} max={10} min={1} step={1} className="py-4" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Energy Level</label>
+                  <Select onValueChange={setEnergyLevel} value={energyLevel}>
+                    <SelectTrigger className="rounded-xl border-zinc-100 dark:border-zinc-800">
+                      <SelectValue placeholder="Select level" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Life Area</label>
+                  <Select onValueChange={setLifeArea} value={lifeArea}>
+                    <SelectTrigger className="rounded-xl border-zinc-100 dark:border-zinc-800">
+                      <SelectValue placeholder="Select area" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Work">Work</SelectItem>
+                      <SelectItem value="Health">Health</SelectItem>
+                      <SelectItem value="Social">Social</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <Button disabled={!energyLevel || !lifeArea} onClick={() => setStep("physical")} className="w-full rounded-xl py-6 bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900">
+                Continue <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
             </motion.div>
           )}
 
-          {step === "reflection" && (
-            <motion.div 
-              key="step-reflection"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="space-y-6"
-            >
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-gray-700 dark:text-zinc-300 flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
-                  Body Scan: Where do you feel this in your body?
-                </label>
-                <Input
-                  placeholder="e.g., tightness in chest, warmth in hands..."
-                  value={bodyScan}
-                  onChange={(e) => setBodyScan(e.target.value)}
-                  className="border-gray-100 dark:border-zinc-800 dark:bg-zinc-800/50 focus:ring-indigo-100 dark:focus:ring-indigo-900 rounded-xl py-6"
-                />
+          {step === "physical" && (
+            <motion.div key="physical" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
+              <div className="space-y-4">
+                <label className="text-sm font-medium dark:text-zinc-400">Where do you feel your emotions physically?</label>
+                <Input placeholder="Describe the physical sensation..." value={bodyScan} onChange={(e) => setBodyScan(e.target.value)} className="rounded-xl border-zinc-100 dark:border-zinc-800 py-6" />
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-gray-700 dark:text-zinc-300 flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-purple-400" />
-                  Coping Strategy: What helps you manage this?
-                </label>
-                <Input
-                  placeholder="e.g., deep breathing, taking a walk, calling a friend..."
-                  value={copingStrategy}
-                  onChange={(e) => setCopingStrategy(e.target.value)}
-                  className="border-gray-100 dark:border-zinc-800 dark:bg-zinc-800/50 focus:ring-indigo-100 dark:focus:ring-indigo-900 rounded-xl py-6"
-                />
+              <div className="space-y-4">
+                <label className="text-sm font-medium dark:text-zinc-400">Name one Small Win from today.</label>
+                <Input placeholder="Something you're proud of..." value={smallWin} onChange={(e) => setSmallWin(e.target.value)} className="rounded-xl border-zinc-100 dark:border-zinc-800 py-6" />
               </div>
               <div className="flex gap-4">
-                <Button variant="ghost" onClick={() => setStep("mood")} className="flex-1 rounded-xl py-6 dark:text-zinc-400 dark:hover:bg-zinc-800">
-                  <ArrowLeft className="mr-2 w-4 h-4" /> Back
-                </Button>
-                <Button onClick={() => setStep("gratitude")} className="flex-1 bg-indigo-600 hover:bg-indigo-700 rounded-xl py-6">
-                  Next <ArrowRight className="ml-2 w-4 h-4" />
-                </Button>
+                <Button variant="ghost" onClick={() => setStep("vitals")} className="flex-1">Back</Button>
+                <Button onClick={() => setStep(isDown ? "reframe" : "seed")} className="flex-1 bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900">Next</Button>
               </div>
             </motion.div>
           )}
 
-          {step === "gratitude" && (
-            <motion.div 
-              key="step-gratitude"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="space-y-6"
-            >
-              <div className="space-y-3">
-                <label className="text-sm font-bold text-gray-700 dark:text-zinc-300 mb-2 block">
-                  List 3 tiny wins or things you're grateful for:
-                </label>
-                {gratitude.map((item, i) => (
-                  <div key={i} className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-300 dark:text-indigo-600 font-bold">{i + 1}.</span>
-                    <Input
-                      placeholder={`Something I'm thankful for...`}
-                      value={item}
-                      onChange={(e) => handleGratitudeChange(i, e.target.value)}
-                      className="pl-10 border-gray-100 dark:border-zinc-800 dark:bg-zinc-800/50 focus:ring-indigo-100 dark:focus:ring-indigo-900 rounded-xl py-6"
-                    />
-                  </div>
-                ))}
+          {step === "reframe" && (
+            <motion.div key="reframe" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
+              <div className="space-y-4">
+                <label className="text-sm font-medium dark:text-zinc-400">Reframe one negative thought into a growth lesson.</label>
+                <Input placeholder="I learned that..." value={reframe} onChange={(e) => setReframe(e.target.value)} className="rounded-xl border-zinc-100 dark:border-zinc-800 py-6" />
               </div>
               <div className="flex gap-4">
-                <Button variant="ghost" onClick={() => setStep("reflection")} className="flex-1 rounded-xl py-6 dark:text-zinc-400 dark:hover:bg-zinc-800">
-                  <ArrowLeft className="mr-2 w-4 h-4" /> Back
-                </Button>
-                <Button onClick={handleSubmit} className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl py-6 font-bold shadow-lg shadow-indigo-100">
-                  Complete Session <Check className="ml-2 w-4 h-4" />
-                </Button>
+                <Button variant="ghost" onClick={() => setStep("physical")} className="flex-1">Back</Button>
+                <Button onClick={() => setStep("seed")} className="flex-1 bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900">Next</Button>
+              </div>
+            </motion.div>
+          )}
+
+          {step === "seed" && (
+            <motion.div key="seed" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
+              <div className="space-y-4">
+                <label className="text-sm font-medium dark:text-zinc-400">One tiny 2-minute Seed task for tomorrow?</label>
+                <Input placeholder="e.g., Water one plant, open one email..." value={seedTask} onChange={(e) => setSeedTask(e.target.value)} className="rounded-xl border-zinc-100 dark:border-zinc-800 py-6" />
+              </div>
+              <div className="flex gap-4">
+                <Button variant="ghost" onClick={() => setStep(isDown ? "reframe" : "physical")} className="flex-1">Back</Button>
+                <Button onClick={handleSubmit} className="flex-1 bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 font-bold">Complete <Check className="ml-2 w-4 h-4" /></Button>
               </div>
             </motion.div>
           )}
