@@ -3,13 +3,53 @@ import { MoodHistory } from "@/components/MoodHistory";
 import { MoodAnalytics } from "@/components/MoodAnalytics";
 import { useMoodEntries } from "@/hooks/use-mood-entries";
 import { MadeWithDyad } from "@/components/made-with-dyad";
-import { Sparkles, LogOut } from "lucide-react";
+import { Sparkles, LogOut, Trash2, AlertTriangle } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { showSuccess, showError } from "@/utils/toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const Index = () => {
   const { entries, addEntry, deleteEntry, loading } = useMoodEntries();
   const { signOut, user } = useAuth();
+
+  const handleDeleteAccount = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const response = await fetch(
+        "https://qlcjjmtjocsauszbkyrx.supabase.co/functions/v1/delete-account",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to delete account");
+      }
+
+      showSuccess("Account deleted successfully");
+      await signOut();
+    } catch (error: any) {
+      showError(error.message || "An error occurred during deletion");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#fafafa] selection:bg-indigo-100">
@@ -19,7 +59,41 @@ const Index = () => {
       </div>
 
       <div className="relative z-10 container mx-auto px-4 py-12 max-w-4xl">
-        <div className="flex justify-end mb-4">
+        <div className="flex justify-end items-center gap-4 mb-4">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-gray-400 hover:text-red-600 gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete Account
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="flex items-center gap-2">
+                  <AlertTriangle className="text-red-500 w-5 h-5" />
+                  Are you absolutely sure?
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete your
+                  account and remove all your journaling data from our servers.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction 
+                  onClick={handleDeleteAccount}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  Yes, Delete My Account
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
           <Button 
             variant="ghost" 
             size="sm" 
