@@ -126,20 +126,20 @@ export default function Profile() {
           <div className="md:col-span-2 space-y-8">
             <Card className="dark:bg-zinc-900 border-none shadow-xl">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 dark:text-white">
                   <User className="w-5 h-5" /> Personal Info
                 </CardTitle>
-                <CardDescription>Update your name and appearance.</CardDescription>
+                <CardDescription className="dark:text-zinc-400">Update your name and appearance.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
-                    <Input id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} className="dark:bg-zinc-800" />
+                    <Label htmlFor="firstName" className="dark:text-zinc-300">First Name</Label>
+                    <Input id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} className="dark:bg-zinc-800 dark:text-zinc-100" />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} className="dark:bg-zinc-800" />
+                    <Label htmlFor="lastName" className="dark:text-zinc-300">Last Name</Label>
+                    <Input id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} className="dark:bg-zinc-800 dark:text-zinc-100" />
                   </div>
                 </div>
                 <Button onClick={updateProfile} disabled={loading} className="w-full bg-indigo-600 hover:bg-indigo-700">
@@ -150,15 +150,15 @@ export default function Profile() {
 
             <Card className="dark:bg-zinc-900 border-none shadow-xl">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 dark:text-white">
                   <Lock className="w-5 h-5" /> Security
                 </CardTitle>
-                <CardDescription>Keep your account safe by updating your password.</CardDescription>
+                <CardDescription className="dark:text-zinc-400">Keep your account safe by updating your password.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="newPassword">New Password</Label>
-                  <Input id="newPassword" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="dark:bg-zinc-800" />
+                  <Label htmlFor="newPassword" className="dark:text-zinc-300">New Password</Label>
+                  <Input id="newPassword" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="dark:bg-zinc-800 dark:text-zinc-100" />
                 </div>
                 <Button onClick={updatePassword} disabled={loading || !newPassword} variant="secondary" className="w-full">
                   Update Password
